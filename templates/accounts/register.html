@@ -1,0 +1,456 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Create Account | NE-LogiSmart</title>
+
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+
+    <style>
+        /* =====================================
+           ACCOUNT TYPE SELECTOR
+        ===================================== */
+
+        .role-heading {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .role-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .role-option {
+            position: relative;
+        }
+
+        .role-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 1px;
+            height: 1px;
+        }
+
+        .role-option label {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            min-height: 58px;
+            padding: 14px;
+
+            border: 1.5px solid #d1d5db;
+            border-radius: 9px;
+
+            background: #ffffff;
+            color: #263449;
+
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: 0.7px;
+
+            cursor: pointer;
+
+            transition: all 0.25s ease;
+        }
+
+        /* Hover effect */
+        .role-option label:hover {
+            border-color: #2563eb;
+            background: #eff6ff;
+
+            transform: translateY(-3px);
+
+            box-shadow: 0 5px 14px
+                rgba(37, 99, 235, 0.12);
+        }
+
+        /* Selected option */
+        .role-option input[type="radio"]:checked + label {
+            border: 2px solid #2563eb;
+            background: #eff6ff;
+            color: #2563eb;
+
+            box-shadow: 0 3px 12px
+                rgba(37, 99, 235, 0.12);
+        }
+
+        /* Keyboard accessibility */
+        .role-option input[type="radio"]:focus-visible + label {
+            outline: 3px solid rgba(37, 99, 235, 0.3);
+            outline-offset: 3px;
+        }
+
+        /* Admin code visibility */
+        #admin-code-group[hidden] {
+            display: none !important;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="auth-container">
+
+        <div class="auth-card">
+
+            <!-- Brand -->
+            <a href="{% url 'home' %}" class="auth-brand">
+                <span class="brand-icon">N</span>
+                NE-LogiSmart
+            </a>
+
+            <h1>Create Account</h1>
+
+            <p class="auth-subtitle">
+                Join NE-LogiSmart today
+            </p>
+
+
+            <!-- Django Messages -->
+            {% if messages %}
+                <div class="messages-container">
+
+                    {% for message in messages %}
+                        <div class="message {{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+
+                </div>
+            {% endif %}
+
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+
+                <!-- Username -->
+                <div class="form-group">
+
+                    <label for="{{ form.username.id_for_label }}">
+                        Username
+                    </label>
+
+                    {{ form.username }}
+                    {{ form.username.errors }}
+
+                </div>
+
+
+                <!-- Email -->
+                <div class="form-group">
+
+                    <label for="{{ form.email.id_for_label }}">
+                        Email
+                    </label>
+
+                    {{ form.email }}
+                    {{ form.email.errors }}
+
+                </div>
+
+
+                <!-- Account Type -->
+                <div class="form-group role-selection">
+
+                    <label class="role-heading">
+                        Account Type
+                    </label>
+
+                    <div class="role-options">
+
+                        {% for radio in form.role %}
+
+                            <div class="role-option">
+
+                                {{ radio.tag }}
+
+                                <label for="{{ radio.id_for_label }}">
+                                    {{ radio.choice_label }}
+                                </label>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                    {{ form.role.errors }}
+
+                </div>
+
+
+                <!-- Admin Verification Code -->
+                <div class="form-group"
+                     id="admin-code-group"
+                     hidden>
+
+                    <label for="{{ form.admin_code.id_for_label }}">
+                        Admin Registration Code
+                    </label>
+
+                    {{ form.admin_code }}
+
+                    {{ form.admin_code.errors }}
+
+                </div>
+
+
+                <!-- Password -->
+                <div class="form-group">
+
+                    <label for="{{ form.password1.id_for_label }}">
+                        Password
+                    </label>
+
+                    <div class="password-wrapper">
+
+                        {{ form.password1 }}
+
+                        <button type="button"
+                                class="password-toggle"
+                                aria-label="Show password">
+
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 width="20"
+                                 height="20"
+                                 viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 stroke-width="2"
+                                 stroke-linecap="round"
+                                 stroke-linejoin="round">
+
+                                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/>
+
+                                <circle cx="12" cy="12" r="3"/>
+
+                            </svg>
+
+                        </button>
+
+                    </div>
+
+                    {{ form.password1.errors }}
+
+                </div>
+
+
+                <!-- Confirm Password -->
+                <div class="form-group">
+
+                    <label for="{{ form.password2.id_for_label }}">
+                        Confirm Password
+                    </label>
+
+                    <div class="password-wrapper">
+
+                        {{ form.password2 }}
+
+                        <button type="button"
+                                class="password-toggle"
+                                aria-label="Show password">
+
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 width="20"
+                                 height="20"
+                                 viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 stroke-width="2"
+                                 stroke-linecap="round"
+                                 stroke-linejoin="round">
+
+                                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/>
+
+                                <circle cx="12" cy="12" r="3"/>
+
+                            </svg>
+
+                        </button>
+
+                    </div>
+
+                    {{ form.password2.errors }}
+
+                </div>
+
+
+                <!-- Non-field errors -->
+                {% if form.non_field_errors %}
+
+                    <div class="form-errors">
+                        {{ form.non_field_errors }}
+                    </div>
+
+                {% endif %}
+
+
+                <!-- Submit -->
+                <button type="submit" class="auth-button">
+                    Create Account
+                </button>
+
+            </form>
+
+
+            <!-- Login Link -->
+            <p class="auth-footer">
+
+                Already have an account?
+
+                <a href="{% url 'accounts:login' %}">
+                    Login
+                </a>
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            /* =====================================
+               ACCOUNT TYPE SELECTION
+            ===================================== */
+
+            const roleInputs = document.querySelectorAll(
+                'input[name="role"]'
+            );
+
+            const adminCodeGroup = document.getElementById(
+                "admin-code-group"
+            );
+
+            const adminCodeInput = document.getElementById(
+                "{{ form.admin_code.id_for_label }}"
+            );
+
+            function updateAdminCodeVisibility() {
+
+                const selectedRole = document.querySelector(
+                    'input[name="role"]:checked'
+                );
+
+                const isAdmin = selectedRole &&
+                    selectedRole.value === "ADMIN";
+
+                adminCodeGroup.hidden = !isAdmin;
+
+                if (adminCodeInput) {
+
+                    adminCodeInput.required = isAdmin;
+
+                    if (!isAdmin) {
+                        adminCodeInput.value = "";
+                    }
+
+                }
+
+            }
+
+            roleInputs.forEach(function (radio) {
+
+                radio.addEventListener(
+                    "change",
+                    updateAdminCodeVisibility
+                );
+
+            });
+
+            updateAdminCodeVisibility();
+
+
+            /* =====================================
+               PASSWORD SHOW / HIDE
+            ===================================== */
+
+            const toggleButtons = document.querySelectorAll(
+                ".password-toggle"
+            );
+
+            const eyeIcon = `
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="20" height="20"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/>
+
+                    <circle cx="12" cy="12" r="3"/>
+
+                </svg>
+            `;
+
+            const eyeOffIcon = `
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="20" height="20"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <path d="M3 3l18 18"/>
+                    <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"/>
+                    <path d="M9.9 5.2A10.7 10.7 0 0 1 12 5c6.5 0 10 7 10 7a13.5 13.5 0 0 1-3.3 4.1"/>
+                    <path d="M6.2 6.2C3.5 8.1 2 12 2 12s3.5 7 10 7a10.8 10.8 0 0 0 4-.8"/>
+
+                </svg>
+            `;
+
+            toggleButtons.forEach(function (button) {
+
+                button.addEventListener("click", function () {
+
+                    const input = button.parentElement.querySelector(
+                        "input"
+                    );
+
+                    if (!input) return;
+
+                    const isPassword = input.type === "password";
+
+                    input.type = isPassword ? "text" : "password";
+
+                    button.innerHTML = isPassword
+                        ? eyeOffIcon
+                        : eyeIcon;
+
+                    button.setAttribute(
+                        "aria-label",
+                        isPassword ? "Hide password" : "Show password"
+                    );
+
+                });
+
+            });
+
+        });
+
+    </script>
+
+</body>
+
+</html>

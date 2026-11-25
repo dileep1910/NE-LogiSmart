@@ -1,0 +1,434 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>NE-LogiSmart | Smart Logistics Platform</title>
+
+    <meta name="description"
+        content="NE-LogiSmart is an intelligent logistics and accessibility platform designed for Northeast India.">
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <!-- ================= NAVIGATION ================= -->
+
+    <header class="main-header">
+        <nav class="navbar">
+
+            <a href="{% url 'home' %}" class="brand">
+                <span class="brand-icon">N</span>
+                <span>NE-LogiSmart</span>
+            </a>
+
+            <div class="nav-links">
+                <a href="{% url 'home' %}#home">Home</a>
+                <a href="{% url 'home' %}#about">About</a>
+                <a href="{% url 'home' %}#services">Features</a>
+                <a href="{% url 'home' %}#contact">Contact</a>
+            </div>
+
+            <!-- Authentication Navigation -->
+
+            <div class="auth-nav">
+
+                {% if user.is_authenticated %}
+
+                    <span class="welcome-user">
+                        Hi, {{ user.username }}
+                    </span>
+
+                    <form action="{% url 'accounts:logout' %}" method="POST"
+                        class="logout-form">
+                        {% csrf_token %}
+
+                        <button type="submit" class="nav-button logout-button">
+                            Logout
+                        </button>
+                    </form>
+
+                {% else %}
+
+                    <a href="{% url 'accounts:login' %}" class="login-link">
+                        Login
+                    </a>
+
+                    <a href="{% url 'accounts:register' %}" class="nav-button register-button">
+                        Register
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        </nav>
+    </header>
+
+
+    <!-- ================= MESSAGES ================= -->
+
+    {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+
+    <!-- ================= HERO SECTION ================= -->
+
+    <main>
+
+        <section id="home" class="hero-section">
+
+            <div class="hero-container">
+
+                <!-- Left Hero Content -->
+
+                <div class="hero-content">
+
+                    <span class="hero-label">
+                        SMART LOGISTICS FOR NORTHEAST INDIA
+                    </span>
+
+                    <h1>
+                        Connecting the Northeast,
+                        <span>Intelligently.</span>
+                    </h1>
+
+                    <p class="hero-description">
+                        Discover smarter logistics, accessible routes,
+                        and intelligent delivery solutions designed
+                        for the unique geography of Northeast India.
+                    </p>
+
+                    <div class="hero-buttons">
+
+                        <a href="{% url 'route_planner' %}" class="primary-button">
+                            Explore Platform →
+                        </a>
+
+                        <a href="#about" class="secondary-button">
+                            Learn More
+                        </a>
+
+                    </div>
+
+                    <div class="hero-note">
+                        <span class="status-dot"></span>
+                        Smarter routes. Better accessibility. Connected communities.
+                    </div>
+
+                </div>
+
+
+                <!-- Right Hero Illustration -->
+
+                <div class="hero-visual">
+
+                    <div class="visual-card">
+
+                        <div class="visual-header">
+                            <div>
+                                <span class="visual-label">
+                                    LOGISTICS OVERVIEW
+                                </span>
+
+                                <h3>Route Intelligence</h3>
+                            </div>
+
+                            <span class="live-badge">
+                                Demo Preview
+                            </span>
+                        </div>
+
+
+                        <!-- Route Illustration -->
+
+                        <div class="route-illustration">
+
+                            <div class="route-location">
+                                <span class="location-marker start-marker">
+                                    ●
+                                </span>
+
+                                <div>
+                                    <strong>Guwahati</strong>
+                                    <small>Starting location</small>
+                                </div>
+                            </div>
+
+                            <div class="route-line">
+                                <span>✦</span>
+                            </div>
+
+                            <div class="route-location">
+                                <span class="location-marker end-marker">
+                                    ●
+                                </span>
+
+                                <div>
+                                    <strong>Shillong</strong>
+                                    <small>Destination</small>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                        <!-- Route Information -->
+
+                        <div class="route-details">
+
+                            <div>
+                                <span>Estimated distance</span>
+                                <strong>~100 km</strong>
+                            </div>
+
+                            <div>
+                                <span>Transport mode</span>
+                                <strong>Road</strong>
+                            </div>
+
+                            <div>
+                                <span>Recommendation</span>
+                                <strong class="recommended">
+                                    Route analysis
+                                </strong>
+                            </div>
+
+                        </div>
+
+
+                        <!-- Statistics -->
+
+                        <div class="visual-footer">
+
+                            <div class="mini-stat">
+                                <span class="stat-icon">↗</span>
+                                <div>
+                                    <strong>Smart</strong>
+                                    <small>Route planning</small>
+                                </div>
+                            </div>
+
+                            <div class="mini-stat">
+                                <span class="stat-icon">◎</span>
+                                <div>
+                                    <strong>Inclusive</strong>
+                                    <small>Accessibility</small>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="floating-card">
+                        <span>✦</span>
+                        Intelligent Route Recommendations
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= ABOUT SECTION ================= -->
+
+        <section id="about" class="section about-section">
+
+            <div class="section-heading">
+
+                <span class="section-label">ABOUT OUR PLATFORM</span>
+
+                <h2>
+                    Making Logistics Smarter and More Accessible
+                </h2>
+
+                <p>
+                    NE-LogiSmart is a logistics and accessibility
+                    intelligence platform designed to support
+                    better transportation and delivery decisions
+                    across Northeast India.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= FEATURES SECTION ================= -->
+
+        <section id="services" class="section services-section">
+
+            <div class="section-heading">
+
+                <span class="section-label">WHAT WE OFFER</span>
+
+                <h2>Explore Our Platform Features</h2>
+
+                <p>
+                    Simple and intelligent tools for better
+                    logistics planning and delivery management.
+                </p>
+
+            </div>
+
+
+            <div class="feature-grid">
+
+                <a href="{% url 'route_planner' %}" class="feature-card">
+
+                    <div class="feature-icon">↗</div>
+
+                    <h3>Smart Route Planning</h3>
+
+                    <p>
+                        Compare available routes using travel time,
+                        transportation cost, and reliability.
+                    </p>
+
+                </a>
+
+
+                <article class="feature-card">
+
+                    <div class="feature-icon">📦</div>
+                    <span class="feature-status">Coming Soon</span>
+
+                    <h3>Delivery Tracking</h3>
+
+                    <p>
+                        Create shipments and monitor delivery
+                        progress through unique tracking IDs.
+                    </p>
+
+                </article>
+
+
+                <article class="feature-card">
+
+                    <div class="feature-icon">♿</div>
+                    <span class="feature-status">Coming Soon</span>
+
+                    <h3>Accessibility Intelligence</h3>
+
+                    <p>
+                        Explore accessibility information to support
+                        more inclusive transportation decisions.
+                    </p>
+
+                </article>
+
+
+                <article class="feature-card">
+
+                    <div class="feature-icon">✦</div>
+                    <span class="feature-status">Coming Soon</span>
+
+                    <h3>Intelligent Recommendations</h3>
+
+                    <p>
+                        Find suitable routes using a weighted
+                        scoring algorithm.
+                    </p>
+
+                </article>
+
+
+                <article class="feature-card">
+
+                    <div class="feature-icon">▥</div>
+                    <span class="feature-status">Coming Soon</span>
+
+                    <h3>Analytics Dashboard</h3>
+
+                    <p>
+                        Understand delivery statistics and
+                        logistics performance through visual reports.
+                    </p>
+
+                </article>
+
+
+                <article class="feature-card">
+
+                    <div class="feature-icon">⌖</div>
+                    <span class="feature-status">Coming Soon</span>
+
+                    <h3>Location Intelligence</h3>
+
+                    <p>
+                        Explore locations and transportation
+                        information across Northeast India.
+                    </p>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= CONTACT SECTION ================= -->
+
+        <section id="contact" class="contact-section">
+
+            <span class="section-label">
+                CONNECTING COMMUNITIES
+            </span>
+
+            <h2>
+                Building a Smarter Northeast
+            </h2>
+
+            <p>
+                Better logistics decisions begin with better
+                information, accessibility, and intelligent planning.
+            </p>
+
+            <a href="#home" class="contact-button">
+                Back to Top ↑
+            </a>
+
+        </section>
+
+    </main>
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer class="main-footer">
+
+        <div class="footer-content">
+
+            <div>
+                <h3>NE-LogiSmart</h3>
+
+                <p>
+                    Connecting the Northeast, Intelligently.
+                </p>
+            </div>
+
+            <p class="copyright">
+                &copy; 2026 NE-LogiSmart. All rights reserved.
+            </p>
+
+        </div>
+
+    </footer>
+
+</body>
+</html>

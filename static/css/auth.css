@@ -1,0 +1,244 @@
+
+/* =========================================
+   NE-LogiSmart Authentication Styles
+========================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+    color: #1e293b;
+    min-height: 100vh;
+}
+
+/* Main layout */
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 20px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 460px;
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(15, 23, 42, 0.12);
+}
+
+/* Brand */
+.auth-brand {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #0f2747;
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 28px;
+}
+
+.brand-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #0f2747;
+    color: #ffffff;
+    border-radius: 9px;
+    font-weight: bold;
+}
+
+/* Headings */
+.auth-card h1 {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 10px;
+    color: #0f2747;
+}
+
+.auth-subtitle {
+    text-align: center;
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+/* Form */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #334155;
+}
+
+/* Inputs */
+.form-group input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    outline: none;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus {
+    border-color: #0d9488;
+    box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
+}
+
+/* Django field errors */
+.form-group ul.errorlist {
+    list-style: none;
+    margin-top: 7px;
+    color: #dc2626;
+    font-size: 13px;
+}
+
+.form-errors {
+    color: #dc2626;
+    font-size: 13px;
+    margin-bottom: 15px;
+}
+
+/* Messages */
+.form-message {
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.form-message.error {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.form-message.success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+/* Button */
+.auth-button {
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 8px;
+    background: #0f2747;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.auth-button:hover {
+    background: #0d9488;
+    transform: translateY(-1px);
+}
+
+/* Footer */
+.auth-footer {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 14px;
+    color: #64748b;
+}
+
+.auth-footer a {
+    color: #0d9488;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .auth-card {
+        padding: 28px 22px;
+    }
+
+    .auth-card h1 {
+        font-size: 24px;
+    }
+}
+
+/* =========================================
+   Password Visibility Toggle
+========================================= */
+
+.password-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+/* Password input spacing for the eye icon */
+.password-wrapper input {
+    width: 100%;
+    padding: 12px 46px 12px 14px;
+}
+
+/* Eye toggle button */
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: auto;
+    height: auto;
+    padding: 4px;
+
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0;
+    box-shadow: none !important;
+    outline: none;
+
+    color: #64748b;
+    cursor: pointer;
+}
+
+/* Hover */
+.password-toggle:hover {
+    background: transparent !important;
+    color: #0d9488;
+}
+
+/* Keyboard accessibility */
+.password-toggle:focus-visible {
+    outline: 2px solid #0d9488;
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+/* SVG eye icons */
+.password-toggle svg {
+    display: block;
+    width: 20px;
+    height: 20px;
+}

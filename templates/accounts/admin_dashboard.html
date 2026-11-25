@@ -1,0 +1,336 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NE-LogiSmart | Admin Dashboard</title>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <style>
+        body {
+            background: var(--background);
+        }
+
+        .dashboard-hero {
+            background:
+                radial-gradient(circle at 85% 15%, #d8f4ed 0%, transparent 30%),
+                linear-gradient(120deg, #f0f7fa, #eaf6f4);
+            padding: 65px 25px;
+        }
+
+        .dashboard-container {
+            max-width: 1150px;
+            margin: auto;
+        }
+
+        .dashboard-label {
+            color: var(--teal-dark);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1.8px;
+        }
+
+        .dashboard-hero h1 {
+            color: var(--navy);
+            font-size: clamp(30px, 4vw, 43px);
+            line-height: 1.2;
+            margin: 15px 0;
+            letter-spacing: -1px;
+        }
+
+        .dashboard-hero h1 span {
+            color: var(--teal);
+        }
+
+        .dashboard-hero p {
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        .dashboard-section {
+            max-width: 1150px;
+            margin: auto;
+            padding: 65px 25px;
+        }
+
+        .section-heading {
+            margin-bottom: 35px;
+        }
+
+        .section-heading h2 {
+            color: var(--navy);
+            font-size: 28px;
+            margin: 10px 0;
+        }
+
+        .section-heading p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 23px;
+        }
+
+        .dashboard-card {
+            padding: 30px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            transition: 0.3s;
+            min-height: 220px;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 35px rgba(16, 42, 67, 0.08);
+            border-color: #b7e8d5;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: #e7f8f2;
+            color: var(--teal);
+            font-size: 23px;
+            margin-bottom: 22px;
+        }
+
+        .dashboard-card h3 {
+            color: var(--navy);
+            font-size: 17px;
+            margin-bottom: 12px;
+        }
+
+        .dashboard-card p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .feature-status {
+            display: inline-block;
+            background: #f1f5f9;
+            color: var(--muted);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            margin-top: 16px;
+        }
+
+        .admin-notice {
+            margin-top: 35px;
+            padding: 22px 25px;
+            background: #e7f8f2;
+            border: 1px solid #b7e8d5;
+            border-radius: 12px;
+            color: var(--teal-dark);
+            font-size: 13px;
+        }
+
+        .admin-notice strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-hero {
+                padding: 50px 20px;
+            }
+
+            .dashboard-section {
+                padding: 45px 20px;
+            }
+
+            .section-heading h2 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="main-header">
+    <nav class="navbar">
+
+        <a href="{% url 'home' %}" class="brand">
+            <span class="brand-icon">N</span>
+            <span>NE-LogiSmart</span>
+        </a>
+
+        <div class="nav-links">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'home' %}#about">About</a>
+            <a href="{% url 'home' %}#services">Features</a>
+            <a href="{% url 'home' %}#contact">Contact</a>
+        </div>
+
+        <div class="auth-nav">
+            <span class="welcome-user">
+                Hi, {{ request.user.username }}
+            </span>
+
+            <form action="{% url 'accounts:logout' %}"
+                  method="POST" class="logout-form">
+                {% csrf_token %}
+                <button type="submit" class="logout-button">
+                    Logout
+                </button>
+            </form>
+        </div>
+
+    </nav>
+</header>
+
+{% if messages %}
+<div class="messages-container">
+    {% for message in messages %}
+        <div class="message {{ message.tags }}">
+            {{ message }}
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<main>
+
+    <section class="dashboard-hero">
+        <div class="dashboard-container">
+
+            <span class="dashboard-label">
+                ADMINISTRATION PANEL
+            </span>
+
+            <h1>
+                Welcome back,
+                <span>{{ request.user.username }}.</span>
+            </h1>
+
+            <p>
+                Manage users, monitor logistics activity,
+                review incidents and oversee the NE-LogiSmart platform.
+            </p>
+
+        </div>
+    </section>
+
+    <section class="dashboard-section">
+
+        <div class="section-heading">
+            <span class="section-label">PLATFORM MANAGEMENT</span>
+            <h2>Administration Dashboard</h2>
+            <p>
+                Manage platform operations and access administrative tools.
+            </p>
+        </div>
+
+        <div class="dashboard-grid">
+
+            <article class="dashboard-card">
+                <div class="card-icon">♙</div>
+                <h3>User Management</h3>
+                <p>
+                    View registered users, inspect account details
+                    and manage platform users.
+                </p>
+                <span class="feature-status">Coming Soon</span>
+            </article>
+
+            <article class="dashboard-card">
+                <div class="card-icon">▤</div>
+                <h3>News Management</h3>
+                <p>
+                    Publish, edit and archive official news,
+                    road updates and incident announcements.
+                </p>
+                <span class="feature-status">Coming Soon</span>
+            </article>
+
+            <article class="dashboard-card">
+                <div class="card-icon">⚑</div>
+                <h3>Incident Verification</h3>
+                <p>
+                    Review user-submitted incident reports
+                    and verify information before publication.
+                </p>
+                <span class="feature-status">Coming Soon</span>
+            </article>
+
+            <article class="dashboard-card">
+                <div class="card-icon">↗</div>
+                <h3>Route Analytics</h3>
+                <p>
+                    Monitor route searches, journey patterns
+                    and logistics activity.
+                </p>
+                <span class="feature-status">Coming Soon</span>
+            </article>
+
+            <article class="dashboard-card">
+                <div class="card-icon">▥</div>
+                <h3>Platform Analytics</h3>
+                <p>
+                    Review user statistics, route activity
+                    and platform performance.
+                </p>
+                <span class="feature-status">Coming Soon</span>
+            </article>
+
+            <article class="dashboard-card">
+                <div class="card-icon">⚙</div>
+                <h3>Platform Management</h3>
+                <p>
+                    Oversee platform information and
+                    administrative operations.
+                </p>
+                <span class="feature-status">Coming Soon</span>
+            </article>
+
+        </div>
+
+        <div class="admin-notice">
+            <strong>Administrator access</strong>
+            You are viewing the administration dashboard.
+            Administrative tools will be connected as their
+            respective development stages are completed.
+        </div>
+
+    </section>
+
+</main>
+
+<footer class="main-footer">
+    <div class="footer-content">
+        <div>
+            <h3>NE-LogiSmart</h3>
+            <p>Connecting the Northeast, Intelligently.</p>
+        </div>
+
+        <p class="copyright">
+            &copy; 2026 NE-LogiSmart. All rights reserved.
+        </p>
+    </div>
+</footer>
+
+</body>
+</html>
