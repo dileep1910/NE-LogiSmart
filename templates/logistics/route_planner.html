@@ -287,6 +287,85 @@
             margin-bottom: 8px;
         }
 
+        /* Route Risk Assessment */
+
+        .route-risk {
+            margin-top: 14px;
+            padding: 12px;
+            border-radius: 8px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+
+        .route-risk-heading {
+            font-size: 12px;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 9px;
+        }
+
+        .route-risk-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .risk-low {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .risk-moderate {
+            background: #ffedd5;
+            color: #9a3412;
+        }
+
+        .risk-high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .risk-insufficient {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .route-risk-metric {
+            color: #64748b;
+            font-size: 11px;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+
+        .route-risk-message {
+            color: #475569;
+            font-size: 11px;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+
+        .route-risk details {
+            margin-top: 10px;
+            font-size: 11px;
+            color: #334155;
+        }
+
+        .route-risk summary {
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .risk-factor-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .risk-factor-item:last-child {
+            border-bottom: none;
+        }
+
         @media (max-width: 650px) {
             .route-summary {
                 grid-template-columns: 1fr;
@@ -489,6 +568,7 @@
                                 class="route-color-indicator"
                                 data-route-color="{{ forloop.counter0 }}"
                             ></span>
+
                             {{ route.name }}
                         </h4>
 
@@ -506,6 +586,96 @@
                         Road network nodes: {{ route.node_count }}
                     </div>
 
+                    <!-- Route Risk Assessment -->
+
+                    <div class="route-risk">
+
+                        <div class="route-risk-heading">
+                            Route Risk Assessment
+                        </div>
+
+                        {% if route.risk_score_available %}
+
+                            <span class="route-risk-status risk-{{ route.risk_level }}">
+                                {{ route.risk_label }}
+                            </span>
+
+                            <div class="route-risk-metric">
+                                Risk score:
+                                <strong>
+                                    {{ route.risk_score|floatformat:1 }}/100
+                                </strong>
+                            </div>
+
+                        {% else %}
+
+                            <span class="route-risk-status risk-insufficient">
+                                Insufficient Data
+                            </span>
+
+                            <div class="route-risk-message">
+                                A reliable risk score cannot currently be calculated.
+                                This does not mean the route is risk-free.
+                            </div>
+
+                        {% endif %}
+
+                        <div class="route-risk-metric">
+                            Data completeness:
+                            <strong>
+                                {{ route.data_completeness|floatformat:1 }}%
+                            </strong>
+                        </div>
+
+                        {% if route.risk_message %}
+                            <div class="route-risk-message">
+                                {{ route.risk_message }}
+                            </div>
+                        {% endif %}
+
+                        {% if route.risk_factors %}
+
+                            <details>
+
+                                <summary>
+                                    View risk factor details
+                                </summary>
+
+                                {% for factor_name, factor in route.risk_factors.items %}
+
+                                    <div class="route-risk-metric risk-factor-item">
+
+                                        <strong>{{ factor_name|title }}</strong>:
+
+                                        {% if factor.available %}
+
+                                            {% if factor.score != None %}
+                                                Score:
+                                                {{ factor.score|floatformat:1 }}/100.
+                                            {% else %}
+                                                Score unavailable.
+                                            {% endif %}
+
+                                        {% else %}
+
+                                            Data unavailable.
+
+                                        {% endif %}
+
+                                        {% if factor.message %}
+                                            {{ factor.message }}
+                                        {% endif %}
+
+                                    </div>
+
+                                {% endfor %}
+
+                            </details>
+
+                        {% endif %}
+
+                    </div>
+
                     <div class="route-select-hint">
                         Select to highlight this route on the map →
                     </div>
@@ -518,7 +688,8 @@
 
         </div>
 
-        <!-- FIX: One JSON element containing all route data -->
+        <!-- One JSON element containing all route data -->
+
         {{ alternative_routes|json_script:"all-route-data" }}
 
         <span class="selected-route-label" id="selected-route-label">
@@ -721,12 +892,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (typeof L === "undefined") {
         console.error("Leaflet failed to load. Check your internet connection or CDN access.");
+
         mapElement.innerHTML =
             "<p style='padding:20px;color:#991b1b;'>Map library could not load. Please check your internet connection.</p>";
+
         return;
     }
 
-    // Read all route data from the single JSON element.
+    // Read all route data.
 
     const routeDataElement = document.getElementById("all-route-data");
 
@@ -918,6 +1091,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const line = document.createElement("span");
         line.className = "legend-line";
+
         line.style.backgroundColor =
             routeColors[index % routeColors.length];
 
@@ -954,7 +1128,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        routes.forEach(function (route, index) {
+        routes.forEach(function (route) {
 
             const layer = routeLayers[route.index];
 
