@@ -6,23 +6,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Route Planner | NE-LogiSmart</title>
 
-    <!-- Existing stylesheet -->
     <link rel="stylesheet" href="{% static 'css/route_planner.css' %}">
-
-    <!-- Choices.js searchable dropdown -->
-    <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/choices.js@11.1.0/public/assets/styles/choices.min.css"
-    >
-
-    <!-- Leaflet map stylesheet -->
-    <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    >
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@11.1.0/public/assets/styles/choices.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
     <style>
         .route-results {
@@ -84,6 +72,165 @@
             font-size: 14px;
         }
 
+        .preference-group {
+            margin-bottom: 22px;
+        }
+
+        .preference-group label {
+            display: block;
+            font-weight: 600;
+            color: #142b4a;
+            margin-bottom: 9px;
+        }
+
+        .preference-group select {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #334155;
+            font-size: 14px;
+        }
+
+        .preference-help {
+            color: #64748b;
+            font-size: 12px;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+
+        .ranking-status {
+            padding: 13px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .ranking-available {
+            background: #ecfdf5;
+            border-left: 4px solid #059669;
+            color: #065f46;
+        }
+
+        .ranking-unavailable {
+            background: #fff7ed;
+            border-left: 4px solid #ea580c;
+            color: #9a3412;
+        }
+
+        /* Route comparison */
+
+        .comparison-heading {
+            margin: 28px 0 8px;
+            color: #142b4a;
+        }
+
+        .comparison-intro {
+            color: #64748b;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+
+        .route-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .route-card {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 17px;
+            text-align: left;
+            cursor: pointer;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+            color: #334155;
+        }
+
+        .route-card:hover {
+            border-color: #64748b;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+        }
+
+        .route-card.active {
+            border-color: #0f766e;
+            box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.12);
+        }
+
+        .route-card.recommended {
+            background: #f0fdfa;
+        }
+
+        .route-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .route-card h4 {
+            color: #142b4a;
+            font-size: 15px;
+            margin: 0;
+        }
+
+        .route-badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            background: #ccfbf1;
+            color: #115e59;
+            white-space: nowrap;
+        }
+
+        .route-color-indicator {
+            display: inline-block;
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .route-card-distance {
+            font-size: 23px;
+            font-weight: 700;
+            color: #0f766e;
+            margin-bottom: 7px;
+        }
+
+        .route-card-detail {
+            color: #64748b;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .route-select-hint {
+            margin-top: 13px;
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .selected-route-label {
+            display: inline-block;
+            background: #ccfbf1;
+            color: #115e59;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        /* Map */
+
         .map-heading {
             color: #142b4a;
             margin-bottom: 12px;
@@ -95,6 +242,28 @@
             border-radius: 12px;
             border: 1px solid #cbd5e1;
             z-index: 1;
+            background: #e2e8f0;
+        }
+
+        .map-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin: 13px 0 20px;
+            font-size: 12px;
+            color: #475569;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-line {
+            width: 24px;
+            height: 5px;
+            border-radius: 5px;
         }
 
         .map-attribution-note {
@@ -114,10 +283,8 @@
             line-height: 1.6;
         }
 
-        .error-detail {
-            color: #991b1b;
-            font-size: 13px;
-            margin-top: 8px;
+        .accessibility-heading h3 {
+            margin-bottom: 8px;
         }
 
         @media (max-width: 650px) {
@@ -132,398 +299,779 @@
             .route-results {
                 padding: 17px;
             }
+
+            .route-cards {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 
 <body>
 
-    <header class="header">
-        <a href="{% url 'home' %}" class="brand">
-            <span class="brand-icon">N</span>
-            NE-LogiSmart
-        </a>
+<header class="header">
+    <a href="{% url 'home' %}" class="brand">
+        <span class="brand-icon">N</span>
+        NE-LogiSmart
+    </a>
 
-        <a href="{% url 'home' %}" class="back-link">
-            ← Back to Home
-        </a>
-    </header>
+    <a href="{% url 'home' %}" class="back-link">
+        ← Back to Home
+    </a>
+</header>
 
-    <main class="main-container">
+<main class="main-container">
 
-        <section class="intro">
-            <span class="section-label">SMART LOGISTICS</span>
+    <section class="intro">
+        <span class="section-label">SMART LOGISTICS</span>
+        <h1>Route Planner</h1>
 
-            <h1>Route Planner</h1>
+        <p>
+            Select your source, destination and preferred route
+            strategy to calculate your journey across Northeast India.
+        </p>
+    </section>
 
-            <p>
-                Select your source and destination to calculate
-                the shortest road route across Northeast India.
-            </p>
-        </section>
+    <section class="planner-card">
 
-        <section class="planner-card">
+        <div class="card-heading">
+            <h2>Plan Your Journey</h2>
+            <p>Search locations and select your route preference.</p>
+        </div>
 
-            <div class="card-heading">
-                <h2>Plan Your Journey</h2>
-                <p>Search and select your journey locations below.</p>
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="source">Source Location</label>
+
+                <select name="source" id="source" required>
+                    <option value="">Search source location</option>
+
+                    {% for location in locations %}
+                        <option
+                            value="{{ location.id }}"
+                            {% if source == location.id|stringformat:"s" %}selected{% endif %}
+                        >
+                            {{ location.name }} — {{ location.state }}
+                            ({{ location.get_category_display }})
+                        </option>
+                    {% endfor %}
+                </select>
             </div>
 
-            <form method="POST">
-                {% csrf_token %}
+            <div class="form-group">
+                <label for="destination">Destination Location</label>
 
-                <div class="form-group">
-                    <label for="source">Source Location</label>
+                <select name="destination" id="destination" required>
+                    <option value="">Search destination location</option>
 
-                    <select name="source" id="source" required>
-                        <option value="">Search source location</option>
+                    {% for location in locations %}
+                        <option
+                            value="{{ location.id }}"
+                            {% if destination == location.id|stringformat:"s" %}selected{% endif %}
+                        >
+                            {{ location.name }} — {{ location.state }}
+                            ({{ location.get_category_display }})
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
 
-                        {% for location in locations %}
-                            <option
-                                value="{{ location.id }}"
-                                {% if source == location.id|stringformat:"s" %}selected{% endif %}
-                            >
-                                {{ location.name }} — {{ location.state }}
-                                ({{ location.get_category_display }})
-                            </option>
-                        {% endfor %}
-                    </select>
+            <div class="preference-group">
+                <label for="preference">Choose Route Preference</label>
+
+                <select name="preference" id="preference" required>
+                    {% for value, label in route_preferences.items %}
+                        <option
+                            value="{{ value }}"
+                            {% if selected_preference == value %}selected{% endif %}
+                        >
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <p class="preference-help">
+                    Shortest prioritizes distance. Other preferences require
+                    their corresponding travel-time, cost or risk data.
+                    Balanced uses metrics available for every candidate route.
+                </p>
+            </div>
+
+            {% if error %}
+                <div class="message error">
+                    <strong>Unable to calculate route</strong>
+                    <p>{{ error }}</p>
                 </div>
+            {% endif %}
 
-                <div class="form-group">
-                    <label for="destination">Destination Location</label>
+            <button type="submit" class="submit-button">
+                Calculate Road Route →
+            </button>
+        </form>
 
-                    <select name="destination" id="destination" required>
-                        <option value="">Search destination location</option>
+    </section>
 
-                        {% for location in locations %}
-                            <option
-                                value="{{ location.id }}"
-                                {% if destination == location.id|stringformat:"s" %}selected{% endif %}
-                            >
-                                {{ location.name }} — {{ location.state }}
-                                ({{ location.get_category_display }})
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
+    {% if submitted and route_result %}
 
-                {% if error %}
-                    <div class="message error">
-                        <strong>Unable to calculate route</strong>
-                        <p>{{ error }}</p>
+    <section class="route-results">
+
+        <h3>Route Calculation Successful!</h3>
+
+        <p class="route-results-intro">
+            Compare the available routes below. Select a route card
+            to highlight its path on the map.
+        </p>
+
+        {% if ranking_available %}
+            <div class="ranking-status ranking-available">
+                <strong>Ranking applied:</strong>
+                {{ ranking_message }}
+            </div>
+        {% else %}
+            <div class="ranking-status ranking-unavailable">
+                <strong>Preference limitation:</strong>
+                {{ ranking_message }}
+                The available routes are displayed without claiming
+                this preference has been satisfied.
+            </div>
+        {% endif %}
+
+        <div class="journey-details">
+            <p>
+                <strong>Source:</strong>
+                {{ source_location.name }},
+                {{ source_location.state }}
+            </p>
+
+            <p>
+                <strong>Destination:</strong>
+                {{ destination_location.name }},
+                {{ destination_location.state }}
+            </p>
+
+            <p>
+                <strong>Selected preference:</strong>
+                {{ selected_preference|title }}
+            </p>
+
+            <p>
+                <strong>Available routes:</strong>
+                {{ route_count }}
+            </p>
+        </div>
+
+        <h3 class="comparison-heading">Compare Available Routes</h3>
+
+        <p class="comparison-intro">
+            The recommended route is shown first when ranking is available.
+            Choose any route to view it on the map.
+        </p>
+
+        <div class="route-cards">
+
+            {% for route in alternative_routes %}
+
+                <button
+                    type="button"
+                    class="route-card
+                        {% if forloop.first %}active{% endif %}
+                        {% if forloop.first and ranking_available %}recommended{% endif %}"
+                    data-route-index="{{ forloop.counter0 }}"
+                    aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"
+                >
+
+                    <div class="route-card-top">
+
+                        <h4>
+                            <span
+                                class="route-color-indicator"
+                                data-route-color="{{ forloop.counter0 }}"
+                            ></span>
+                            {{ route.name }}
+                        </h4>
+
+                        {% if forloop.first and ranking_available %}
+                            <span class="route-badge">RECOMMENDED</span>
+                        {% endif %}
+
                     </div>
-                {% endif %}
 
-                <button type="submit" class="submit-button">
-                    Calculate Road Route →
+                    <div class="route-card-distance">
+                        {{ route.distance_km|floatformat:2 }} km
+                    </div>
+
+                    <div class="route-card-detail">
+                        Road network nodes: {{ route.node_count }}
+                    </div>
+
+                    <div class="route-select-hint">
+                        Select to highlight this route on the map →
+                    </div>
+
                 </button>
 
-            </form>
+            {% empty %}
+                <p>No alternative route information is available.</p>
+            {% endfor %}
+
+        </div>
+
+        <!-- FIX: One JSON element containing all route data -->
+        {{ alternative_routes|json_script:"all-route-data" }}
+
+        <span class="selected-route-label" id="selected-route-label">
+            SELECTED ROUTE: {{ alternative_routes.0.name }}
+        </span>
+
+        <div class="route-summary">
+
+            <div class="summary-item">
+                <span>Selected Route Distance</span>
+                <strong id="selected-distance">
+                    {{ route_result.distance_km|floatformat:2 }} km
+                </strong>
+            </div>
+
+            <div class="summary-item">
+                <span>Road Network Nodes</span>
+                <strong id="selected-node-count">
+                    {{ route_result.node_count }}
+                </strong>
+            </div>
+
+            <div class="summary-item">
+                <span>Route Calculation</span>
+                <strong>Successful</strong>
+            </div>
+
+        </div>
+
+        <h3 class="map-heading">Route Map Comparison</h3>
+
+        <div id="route-map"></div>
+
+        <div class="map-legend" id="map-legend"></div>
+
+        <p class="map-attribution-note">
+            Map tiles © Esri. Road network data derived from
+            OpenStreetMap contributors.
+        </p>
+
+        <div class="journey-details">
+
+            <h3>Route Technical Details</h3>
+
+            <p>
+                <strong>Source road-node snapping:</strong>
+                {{ route_result.source_node.snapping_distance_km|floatformat:3 }} km
+            </p>
+
+            <p>
+                <strong>Destination road-node snapping:</strong>
+                {{ route_result.destination_node.snapping_distance_km|floatformat:3 }} km
+            </p>
+
+        </div>
+
+        {% if source_accessibility and destination_accessibility %}
+
+        <section class="accessibility-section">
+
+            <div class="accessibility-heading">
+                <h3>Accessibility Intelligence</h3>
+                <p>
+                    Road network proximity analysis for your
+                    selected journey endpoints.
+                </p>
+            </div>
+
+            <div class="accessibility-cards">
+
+                <article class="accessibility-card">
+
+                    <span class="accessibility-label">
+                        Source Accessibility
+                    </span>
+
+                    <div class="accessibility-score">
+                        {{ source_accessibility.road_connectivity_score }}<span>/100</span>
+                    </div>
+
+                    <span class="accessibility-rating">
+                        {{ source_accessibility.connectivity_rating }}
+                    </span>
+
+                    <div class="accessibility-metric">
+                        <span>Road proximity</span>
+                        <strong>
+                            {{ source_accessibility.snapping_distance_km|floatformat:3 }} km
+                        </strong>
+                    </div>
+
+                    <p class="accessibility-node">
+                        Nearest road node:
+                        {{ source_accessibility.nearest_road_node_id }}
+                    </p>
+
+                </article>
+
+                <article class="accessibility-card">
+
+                    <span class="accessibility-label">
+                        Destination Accessibility
+                    </span>
+
+                    <div class="accessibility-score">
+                        {{ destination_accessibility.road_connectivity_score }}<span>/100</span>
+                    </div>
+
+                    <span class="accessibility-rating">
+                        {{ destination_accessibility.connectivity_rating }}
+                    </span>
+
+                    <div class="accessibility-metric">
+                        <span>Road proximity</span>
+                        <strong>
+                            {{ destination_accessibility.snapping_distance_km|floatformat:3 }} km
+                        </strong>
+                    </div>
+
+                    <p class="accessibility-node">
+                        Nearest road node:
+                        {{ destination_accessibility.nearest_road_node_id }}
+                    </p>
+
+                </article>
+
+            </div>
+
+            <div class="accessibility-explanation">
+                <strong>How to interpret these scores:</strong>
+                Higher scores mean the location is closer to the
+                extracted road network. This is a road-proximity
+                indicator, not a measure of road quality, traffic,
+                or real-time accessibility.
+            </div>
 
         </section>
-
-        {% if submitted and route_result %}
-
-            <section class="route-results">
-
-                <h3>Route Calculation Successful!</h3>
-
-                <p class="route-results-intro">
-                    Your shortest road route has been calculated
-                    using the NE-LogiSmart road network.
-                </p>
-
-                <div class="journey-details">
-
-                    <p>
-                        <strong>Source:</strong>
-                        {{ source_location.name }},
-                        {{ source_location.state }}
-                    </p>
-
-                    <p>
-                        <strong>Destination:</strong>
-                        {{ destination_location.name }},
-                        {{ destination_location.state }}
-                    </p>
-
-                </div>
-
-                <div class="route-summary">
-
-                    <div class="summary-item">
-                        <span>Shortest Road Distance</span>
-                        <strong>
-                            {{ route_result.distance_km|floatformat:2 }} km
-                        </strong>
-                    </div>
-
-                    <div class="summary-item">
-                        <span>Road Network Nodes</span>
-                        <strong>
-                            {{ route_result.node_count }}
-                        </strong>
-                    </div>
-
-                    <div class="summary-item">
-                        <span>Route Calculation</span>
-                        <strong>Successful</strong>
-                    </div>
-
-                </div>
-
-                <h3 class="map-heading">Calculated Road Route</h3>
-
-                <div id="route-map"></div>
-
-                <p class="map-attribution-note">
-                    Map data © OpenStreetMap contributors.
-                </p>
-
-                <div class="journey-details">
-
-                    <h3>Route Technical Details</h3>
-
-                    <p>
-                        <strong>Source road-node snapping:</strong>
-                        {{ route_result.source_node.snapping_distance_km|floatformat:3 }} km
-                    </p>
-
-                    <p>
-                        <strong>Destination road-node snapping:</strong>
-                        {{ route_result.destination_node.snapping_distance_km|floatformat:3 }} km
-                    </p>
-
-                </div>
-
-                {% if source_accessibility and destination_accessibility %}
-
-                <!-- Accessibility Intelligence Section -->
-                <section class="accessibility-section">
-
-                    <div class="accessibility-heading">
-                        <h3>Accessibility Intelligence</h3>
-                        <p>
-                            Road network proximity analysis for your
-                            selected journey endpoints.
-                        </p>
-                    </div>
-
-                    <div class="accessibility-cards">
-
-                        <!-- Source Accessibility Card -->
-                        <article class="accessibility-card">
-
-                            <span class="accessibility-label">
-                                Source Accessibility
-                            </span>
-
-                            <div class="accessibility-score">
-                                {{ source_accessibility.road_connectivity_score }}<span>/100</span>
-                            </div>
-
-                            <span class="accessibility-rating">
-                                {{ source_accessibility.connectivity_rating }}
-                            </span>
-
-                            <div class="accessibility-metric">
-                                <span>Road proximity</span>
-                                <strong>
-                                    {{ source_accessibility.snapping_distance_km|floatformat:3 }} km
-                                </strong>
-                            </div>
-
-                            <p class="accessibility-node">
-                                Nearest road node:
-                                {{ source_accessibility.nearest_road_node_id }}
-                            </p>
-
-                        </article>
-
-                        <!-- Destination Accessibility Card -->
-                        <article class="accessibility-card">
-
-                            <span class="accessibility-label">
-                                Destination Accessibility
-                            </span>
-
-                            <div class="accessibility-score">
-                                {{ destination_accessibility.road_connectivity_score }}<span>/100</span>
-                            </div>
-
-                            <span class="accessibility-rating">
-                                {{ destination_accessibility.connectivity_rating }}
-                            </span>
-
-                            <div class="accessibility-metric">
-                                <span>Road proximity</span>
-                                <strong>
-                                    {{ destination_accessibility.snapping_distance_km|floatformat:3 }} km
-                                </strong>
-                            </div>
-
-                            <p class="accessibility-node">
-                                Nearest road node:
-                                {{ destination_accessibility.nearest_road_node_id }}
-                            </p>
-
-                        </article>
-
-                    </div>
-
-                    <div class="accessibility-explanation">
-                        <strong>How to interpret these scores:</strong>
-                        Higher scores mean the location is closer to the
-                        extracted road network. This is a road-proximity
-                        indicator, not a measure of road quality, traffic,
-                        or real-time accessibility.
-                    </div>
-
-                </section>
-                <!-- End Accessibility Intelligence Section -->
-
-                {% endif %}
-
-                <div class="route-disclaimer">
-                    <strong>Important:</strong>
-                    The displayed distance is calculated from the extracted
-                    OpenStreetMap road network using Dijkstra's shortest-path
-                    algorithm. It is not a live navigation estimate.
-                    Traffic, road closures and real-time travel conditions
-                    are not included.
-                </div>
-
-            </section>
-
-            {{ route_result.coordinates|json_script:"route-coordinates" }}
 
         {% endif %}
 
-        <p class="demo-note">
-            NE-LogiSmart · Northeast India Logistics Intelligence
-        </p>
+        <div class="route-disclaimer">
+            <strong>Important:</strong>
+            The displayed distances are calculated from the extracted
+            OpenStreetMap road network using Dijkstra's shortest-path
+            algorithm. They are not live navigation estimates.
+            Traffic, road closures and real-time travel conditions
+            are not included.
+        </div>
 
-    </main>
+    </section>
 
-    <!-- Choices.js -->
-    <script src="https://cdn.jsdelivr.net/npm/choices.js@11.1.0/public/assets/scripts/choices.min.js"></script>
+    {% endif %}
 
-    <!-- Leaflet map library -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <p class="demo-note">
+        NE-LogiSmart · Northeast India Logistics Intelligence
+    </p>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
+</main>
 
-            // Initialize searchable dropdowns.
-            const dropdownSettings = {
-                searchEnabled: true,
-                searchPlaceholderValue: "Search by place or state...",
-                itemSelectText: "",
-                shouldSort: false,
-                searchResultLimit: 50,
-                searchFields: ["label", "value"],
-                noResultsText: "No matching locations found",
-                noChoicesText: "No locations available",
-                allowHTML: false
-            };
+<script src="https://cdn.jsdelivr.net/npm/choices.js@11.1.0/public/assets/scripts/choices.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-            new Choices("#source", dropdownSettings);
-            new Choices("#destination", dropdownSettings);
+<script>
+document.addEventListener("DOMContentLoaded", function () {
 
-            // Display the calculated route on the map.
-            const coordinatesElement = document.getElementById(
-                "route-coordinates"
+    // Location dropdown search
+
+    const dropdownSettings = {
+        searchEnabled: true,
+        searchPlaceholderValue: "Search by place or state...",
+        itemSelectText: "",
+        shouldSort: false,
+        searchResultLimit: 50,
+        searchFields: ["label", "value"],
+        noResultsText: "No matching locations found",
+        noChoicesText: "No locations available",
+        allowHTML: false
+    };
+
+    const sourceDropdown = document.getElementById("source");
+    const destinationDropdown = document.getElementById("destination");
+
+    if (sourceDropdown && typeof Choices !== "undefined") {
+        new Choices(sourceDropdown, dropdownSettings);
+    }
+
+    if (destinationDropdown && typeof Choices !== "undefined") {
+        new Choices(destinationDropdown, dropdownSettings);
+    }
+
+    // Stop if this page has no route map.
+
+    const mapElement = document.getElementById("route-map");
+
+    if (!mapElement) {
+        return;
+    }
+
+    // Check Leaflet library.
+
+    if (typeof L === "undefined") {
+        console.error("Leaflet failed to load. Check your internet connection or CDN access.");
+        mapElement.innerHTML =
+            "<p style='padding:20px;color:#991b1b;'>Map library could not load. Please check your internet connection.</p>";
+        return;
+    }
+
+    // Read all route data from the single JSON element.
+
+    const routeDataElement = document.getElementById("all-route-data");
+
+    if (!routeDataElement) {
+        console.error("Route data element #all-route-data was not found.");
+        return;
+    }
+
+    let routeData;
+
+    try {
+        routeData = JSON.parse(routeDataElement.textContent);
+    } catch (error) {
+        console.error("Unable to parse route data:", error);
+        return;
+    }
+
+    if (!Array.isArray(routeData) || routeData.length === 0) {
+        console.error("No route data was received.");
+        return;
+    }
+
+    const routeColors = [
+        "#0f766e",
+        "#2563eb",
+        "#ea580c",
+        "#9333ea",
+        "#dc2626"
+    ];
+
+    const routes = [];
+
+    routeData.forEach(function (route, index) {
+
+        const coordinates = route.coordinates;
+
+        if (!Array.isArray(coordinates) || coordinates.length < 2) {
+            console.warn("Invalid coordinates for route:", route.name);
+            return;
+        }
+
+        const allCoordinates = coordinates.map(function (point) {
+            return [
+                Number(point.latitude),
+                Number(point.longitude)
+            ];
+        });
+
+        const validCoordinates = allCoordinates.every(function (point) {
+            return (
+                Number.isFinite(point[0]) &&
+                Number.isFinite(point[1]) &&
+                Math.abs(point[0]) <= 90 &&
+                Math.abs(point[1]) <= 180
             );
+        });
 
-            if (coordinatesElement) {
+        if (!validCoordinates) {
+            console.warn("Invalid latitude or longitude in:", route.name);
+            return;
+        }
 
-                const routeCoordinates = JSON.parse(
-                    coordinatesElement.textContent
-                );
+        routes.push({
+            index: index,
+            name: route.name || "Route " + (index + 1),
+            distance: Number(route.distance_km),
+            nodeCount: Number(route.node_count),
+            coordinates: allCoordinates
+        });
 
-                if (routeCoordinates.length > 0) {
+    });
 
-                    // Convert route coordinates into Leaflet format.
-                    const allCoordinates = routeCoordinates.map(point => [
-                        point.latitude,
-                        point.longitude
-                    ]);
+    if (routes.length === 0) {
+        console.error("No valid route coordinates are available.");
+        return;
+    }
 
-                    // Limit map rendering points while retaining both endpoints.
-                    const maximumMapPoints = 1200;
+    console.log("Routes loaded successfully:", routes.length);
 
-                    const step = Math.max(
-                        1,
-                        Math.ceil(allCoordinates.length / maximumMapPoints)
-                    );
+    // Initialize Leaflet map.
 
-                    const displayCoordinates = allCoordinates.filter(
-                        (point, index) =>
-                            index % step === 0 ||
-                            index === allCoordinates.length - 1
-                    );
+    const map = L.map("route-map");
 
-                    // Create map.
-                    const map = L.map("route-map");
+    L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+        {
+            maxZoom: 19,
+            attribution:
+                "Tiles &copy; Esri — Sources: Esri, HERE, Garmin, " +
+                "USGS, Intermap, and OpenStreetMap contributors"
+        }
+    ).addTo(map);
 
-                    // Load map tiles.
-                    L.tileLayer(
-                        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
-                        {
-                            maxZoom: 19,
-                            attribution:
-                                "Tiles &copy; Esri — Sources: Esri, HERE, Garmin, " +
-                                "USGS, Intermap, and OpenStreetMap contributors"
-                        }
-                    ).addTo(map);
+    const routeLayers = {};
 
-                    // Draw calculated road route.
-                    const routeLine = L.polyline(
-                        displayCoordinates,
-                        {
-                            color: "#0f766e",
-                            weight: 5,
-                            opacity: 0.85
-                        }
-                    ).addTo(map);
+    const allMapLayers = [];
 
-                    // Mark source.
-                    const sourceMarker = L.marker(
-                        allCoordinates[0]
-                    ).addTo(map);
+    // Reduce displayed points for better map performance.
 
-                    sourceMarker.bindPopup(
-                        "<strong>Source:</strong> " +
-                        "{{ source_location.name|escapejs }}"
-                    );
+    function simplifyCoordinates(coordinates) {
 
-                    // Mark destination.
-                    const destinationMarker = L.marker(
-                        allCoordinates[allCoordinates.length - 1]
-                    ).addTo(map);
+        const maximumMapPoints = 1200;
 
-                    destinationMarker.bindPopup(
-                        "<strong>Destination:</strong> " +
-                        "{{ destination_location.name|escapejs }}"
-                    );
+        const step = Math.max(
+            1,
+            Math.ceil(coordinates.length / maximumMapPoints)
+        );
 
-                    // Fit map to the complete route.
-                    map.fitBounds(routeLine.getBounds(), {
-                        padding: [30, 30]
-                    });
+        return coordinates.filter(function (point, index) {
+            return (
+                index % step === 0 ||
+                index === coordinates.length - 1
+            );
+        });
 
-                    // Ensure map renders correctly.
-                    setTimeout(function () {
-                        map.invalidateSize();
-                    }, 100);
+    }
 
-                }
+    // Draw every route.
+
+    routes.forEach(function (route, index) {
+
+        const color = routeColors[index % routeColors.length];
+
+        const displayCoordinates = simplifyCoordinates(
+            route.coordinates
+        );
+
+        const routeLine = L.polyline(
+            displayCoordinates,
+            {
+                color: color,
+                weight: index === 0 ? 6 : 4,
+                opacity: index === 0 ? 0.95 : 0.65
+            }
+        ).addTo(map);
+
+        routeLine.bindPopup(
+            "<strong>" + route.name + "</strong><br>" +
+            "Distance: " + route.distance.toFixed(2) + " km"
+        );
+
+        routeLayers[route.index] = routeLine;
+
+        allMapLayers.push(routeLine);
+
+        const colorIndicator = document.querySelector(
+            '[data-route-color="' + route.index + '"]'
+        );
+
+        if (colorIndicator) {
+            colorIndicator.style.backgroundColor = color;
+        }
+
+    });
+
+    // Source and destination markers.
+
+    const firstRouteCoordinates = routes[0].coordinates;
+
+    const sourceMarker = L.marker(
+        firstRouteCoordinates[0]
+    ).addTo(map);
+
+    sourceMarker.bindPopup(
+        "<strong>Source:</strong> " +
+        "{{ source_location.name|escapejs }}"
+    );
+
+    const destinationMarker = L.marker(
+        firstRouteCoordinates[firstRouteCoordinates.length - 1]
+    ).addTo(map);
+
+    destinationMarker.bindPopup(
+        "<strong>Destination:</strong> " +
+        "{{ destination_location.name|escapejs }}"
+    );
+
+    allMapLayers.push(sourceMarker);
+    allMapLayers.push(destinationMarker);
+
+    // Create map legend.
+
+    const legend = document.getElementById("map-legend");
+
+    routes.forEach(function (route, index) {
+
+        const item = document.createElement("div");
+        item.className = "legend-item";
+
+        const line = document.createElement("span");
+        line.className = "legend-line";
+        line.style.backgroundColor =
+            routeColors[index % routeColors.length];
+
+        const label = document.createElement("span");
+        label.textContent = route.name;
+
+        item.appendChild(line);
+        item.appendChild(label);
+
+        legend.appendChild(item);
+
+    });
+
+    // Initially show all routes.
+
+    const allBounds = L.featureGroup(allMapLayers).getBounds();
+
+    if (allBounds.isValid()) {
+        map.fitBounds(allBounds, {
+            padding: [30, 30]
+        });
+    }
+
+    // Select and highlight a route.
+
+    function selectRoute(selectedIndex) {
+
+        const selectedRoute = routes.find(function (route) {
+            return route.index === selectedIndex;
+        });
+
+        if (!selectedRoute) {
+            console.error("Selected route was not found:", selectedIndex);
+            return;
+        }
+
+        routes.forEach(function (route, index) {
+
+            const layer = routeLayers[route.index];
+
+            if (!layer) {
+                return;
+            }
+
+            if (route.index === selectedIndex) {
+
+                layer.setStyle({
+                    weight: 7,
+                    opacity: 1
+                });
+
+                layer.bringToFront();
+
+            } else {
+
+                layer.setStyle({
+                    weight: 3,
+                    opacity: 0.35
+                });
 
             }
 
         });
-    </script>
+
+        // Keep endpoint markers visible.
+
+        sourceMarker.setZIndexOffset(1000);
+        destinationMarker.setZIndexOffset(1000);
+
+        const selectedColor =
+            routeColors[routes.indexOf(selectedRoute) % routeColors.length];
+
+        // Update route cards.
+
+        document.querySelectorAll(".route-card").forEach(
+            function (card) {
+
+                const cardIndex = Number(card.dataset.routeIndex);
+
+                const isSelected = cardIndex === selectedIndex;
+
+                card.classList.toggle("active", isSelected);
+
+                card.setAttribute(
+                    "aria-pressed",
+                    isSelected ? "true" : "false"
+                );
+
+            }
+        );
+
+        // Update selected route label.
+
+        const selectedLabel = document.getElementById(
+            "selected-route-label"
+        );
+
+        selectedLabel.textContent =
+            "SELECTED ROUTE: " + selectedRoute.name;
+
+        selectedLabel.style.backgroundColor = selectedColor;
+        selectedLabel.style.color = "#ffffff";
+
+        // Update route summary.
+
+        document.getElementById(
+            "selected-distance"
+        ).textContent =
+            selectedRoute.distance.toFixed(2) + " km";
+
+        document.getElementById(
+            "selected-node-count"
+        ).textContent = selectedRoute.nodeCount;
+
+        // Zoom to selected route.
+
+        const selectedLayer = routeLayers[selectedIndex];
+
+        if (selectedLayer) {
+            map.fitBounds(selectedLayer.getBounds(), {
+                padding: [30, 30]
+            });
+        }
+
+    }
+
+    // Attach click handlers to comparison cards.
+
+    document.querySelectorAll(".route-card").forEach(
+        function (card) {
+
+            card.addEventListener("click", function () {
+
+                const index = Number(card.dataset.routeIndex);
+
+                selectRoute(index);
+
+            });
+
+        }
+    );
+
+    // Select the first route initially.
+
+    selectRoute(routes[0].index);
+
+    // Correct map sizing after page rendering.
+
+    setTimeout(function () {
+        map.invalidateSize();
+    }, 250);
+
+});
+</script>
 
 </body>
 </html>
